@@ -29,16 +29,16 @@ export function ClearBackground(): Promise<void> {
     return callApp("ClearBackground", () => App.ClearBackground(), undefined);
 }
 
-export function ClearStoryCoverImage(arg1: string): Promise<store.Story> {
-    return callApp("ClearStoryCoverImage", () => App.ClearStoryCoverImage(arg1), null as unknown as store.Story);
+export function ClearStoryCoverImage(arg1: string): Promise<store.Story | null> {
+    return callApp("ClearStoryCoverImage", () => App.ClearStoryCoverImage(arg1), null);
 }
 
-export function CreateStory(arg1: string, arg2: string, arg3: string): Promise<store.Story> {
-    return callApp("CreateStory", () => App.CreateStory(arg1, arg2, arg3), null as unknown as store.Story);
+export function CreateStory(arg1: string, arg2: string, arg3: string): Promise<store.Story | null> {
+    return callApp("CreateStory", () => App.CreateStory(arg1, arg2, arg3), null);
 }
 
-export function CreateUserTemplate(arg1: string, arg2: string, arg3: string, arg4: string, arg5: string, arg6: string, arg7: boolean, arg8: string, arg9: string, arg10: string, arg11: string, arg12: string): Promise<store.UserTemplate> {
-    return callApp("CreateUserTemplate", () => App.CreateUserTemplate(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12), null as unknown as store.UserTemplate);
+export function CreateUserTemplate(arg1: string, arg2: string, arg3: string, arg4: string, arg5: string, arg6: string, arg7: boolean, arg8: string, arg9: string, arg10: string, arg11: string, arg12: string): Promise<store.UserTemplate | null> {
+    return callApp("CreateUserTemplate", () => App.CreateUserTemplate(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12), null);
 }
 
 export function DeleteModel(arg1: string): Promise<void> {
@@ -113,8 +113,8 @@ export function GetStories(): Promise<Array<store.Story>> {
     return callApp("GetStories", () => App.GetStories(), []);
 }
 
-export function GetStory(arg1: string): Promise<store.Story> {
-    return callApp("GetStory", () => App.GetStory(arg1), null as unknown as store.Story);
+export function GetStory(arg1: string): Promise<store.Story | null> {
+    return callApp("GetStory", () => App.GetStory(arg1), null);
 }
 
 export function GetUserTemplates(): Promise<Array<store.UserTemplate>> {
@@ -125,8 +125,8 @@ export function PickBackgroundImage(): Promise<string> {
     return callApp("PickBackgroundImage", () => App.PickBackgroundImage(), "");
 }
 
-export function PickStoryCoverImage(arg1: string): Promise<store.Story> {
-    return callApp("PickStoryCoverImage", () => App.PickStoryCoverImage(arg1), null as unknown as store.Story);
+export function PickStoryCoverImage(arg1: string): Promise<store.Story | null> {
+    return callApp("PickStoryCoverImage", () => App.PickStoryCoverImage(arg1), null);
 }
 
 export function PullModel(arg1: string): Promise<void> {
@@ -141,8 +141,8 @@ export function SaveModelConfig(arg1: string, arg2: string, arg3: string, arg4: 
     return callApp("SaveModelConfig", () => App.SaveModelConfig(arg1, arg2, arg3, arg4), undefined);
 }
 
-export function SaveSession(arg1: string, arg2: string, arg3: string): Promise<store.Session> {
-    return callApp("SaveSession", () => App.SaveSession(arg1, arg2, arg3), null as unknown as store.Session);
+export function SaveSession(arg1: string, arg2: string, arg3: string): Promise<store.Session | null> {
+    return callApp("SaveSession", () => App.SaveSession(arg1, arg2, arg3), null);
 }
 
 export function SetActiveModel(arg1: string): Promise<void> {
@@ -153,16 +153,16 @@ export function StreamMessage(arg1: string, arg2: Array<main.ChatMessage>, arg3:
     return callApp("StreamMessage", () => App.StreamMessage(arg1, arg2, arg3, arg4), undefined);
 }
 
-export function UpdateStory(arg1: string, arg2: string, arg3: string, arg4: string): Promise<store.Story> {
-    return callApp("UpdateStory", () => App.UpdateStory(arg1, arg2, arg3, arg4), null as unknown as store.Story);
+export function UpdateStory(arg1: string, arg2: string, arg3: string, arg4: string): Promise<store.Story | null> {
+    return callApp("UpdateStory", () => App.UpdateStory(arg1, arg2, arg3, arg4), null);
 }
 
-export function UpdateStorySettings(arg1: string, arg2: string, arg3: boolean, arg4: string, arg5: string, arg6: string, arg7: string): Promise<store.Story> {
-    return callApp("UpdateStorySettings", () => App.UpdateStorySettings(arg1, arg2, arg3, arg4, arg5, arg6, arg7), null as unknown as store.Story);
+export function UpdateStorySettings(arg1: string, arg2: string, arg3: boolean, arg4: string, arg5: string, arg6: string, arg7: string): Promise<store.Story | null> {
+    return callApp("UpdateStorySettings", () => App.UpdateStorySettings(arg1, arg2, arg3, arg4, arg5, arg6, arg7), null);
 }
 
-export function UpdateStoryStatus(arg1: string, arg2: string): Promise<store.Story> {
-    return callApp("UpdateStoryStatus", () => App.UpdateStoryStatus(arg1, arg2), null as unknown as store.Story);
+export function UpdateStoryStatus(arg1: string, arg2: string): Promise<store.Story | null> {
+    return callApp("UpdateStoryStatus", () => App.UpdateStoryStatus(arg1, arg2), null);
 }
 
 export function EventsOn(eventName: string, callback: (...data: any[]) => void): () => void {
