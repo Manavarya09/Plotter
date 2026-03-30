@@ -37,6 +37,11 @@ export function LogFatal(message) {
 }
 
 export function EventsOnMultiple(eventName, callback, maxCallbacks) {
+    if (typeof window === "undefined" || !window.runtime || typeof window.runtime.EventsOnMultiple !== "function") {
+        // Keep hook cleanup code safe when running outside Wails.
+        return () => {};
+    }
+
     return window.runtime.EventsOnMultiple(eventName, callback, maxCallbacks);
 }
 
