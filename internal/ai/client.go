@@ -37,7 +37,7 @@ type StoryContext struct {
 
 func NewClient(model string) (*Client, error) {
 	if model == "" {
-		model = "aratan/qwen3.5-uncensored:9b"
+		model = "qwen3.5:latest"
 	}
 	llm, err := ollama.New(ollama.WithModel(model))
 	if err != nil {

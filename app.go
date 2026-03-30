@@ -41,13 +41,30 @@ func NewApp() *App {
 func (a *App) startup(ctx context.Context) {
 	a.ctx = ctx
 
+	selectedModel, bootstrapErr := BootstrapEnvironment(ctx)
+	if bootstrapErr != nil {
+		log.Printf("warning: bootstrap setup failed: %v", bootstrapErr)
+	}
+
 	s, err := store.New()
 	if err != nil {
 		log.Fatalf("failed to init store: %v", err)
 	}
 	a.store = s
 
-	a.activeModel = loadModelSetting("aratan/qwen3.5-uncensored:9b")
+	defaultModel := defaultQwenModel
+	if selectedModel != "" {
+		defaultModel = selectedModel
+	}
+
+	settings := loadSettings("")
+	if settings.ActiveModel == "" && selectedModel != "" {
+		if err := saveModelSetting(selectedModel); err != nil {
+			log.Printf("warning: failed to persist selected model %q: %v", selectedModel, err)
+		}
+	}
+
+	a.activeModel = loadModelSetting(defaultModel)
 	aiClient, err := ai.NewClient(a.activeModel)
 	if err != nil {
 		log.Printf("warning: ollama not available: %v", err)
@@ -248,8 +265,8 @@ func (a *App) ClearBackground() error {
 
 // ChatMessage is the unit of conversation history passed from the frontend.
 type ChatMessage struct {
-	Role    string `json:"role"`    // "narrator" or "player"
-	Mode    string `json:"mode"`    // "act" or "speak"
+	Role    string `json:"role"` // "narrator" or "player"
+	Mode    string `json:"mode"` // "act" or "speak"
 	Content string `json:"content"`
 }
 
@@ -345,11 +362,21 @@ func (a *App) GetComfyConfig() ComfyConfig {
 	if err == nil {
 		_ = json.Unmarshal(data, &cfg)
 	}
-	if cfg.URL == "" { cfg.URL = "http://127.0.0.1:8000" }
-	if cfg.Steps == 0 { cfg.Steps = 20 }
-	if cfg.CFG == 0 { cfg.CFG = 7 }
-	if cfg.Width == 0 { cfg.Width = 512 }
-	if cfg.Height == 0 { cfg.Height = 768 }
+	if cfg.URL == "" {
+		cfg.URL = "http://127.0.0.1:8000"
+	}
+	if cfg.Steps == 0 {
+		cfg.Steps = 20
+	}
+	if cfg.CFG == 0 {
+		cfg.CFG = 7
+	}
+	if cfg.Width == 0 {
+		cfg.Width = 512
+	}
+	if cfg.Height == 0 {
+		cfg.Height = 768
+	}
 	return cfg
 }
 
@@ -375,7 +402,9 @@ func (a *App) BrowseWorkflowFile() (string, error) {
 func (a *App) CheckComfyUI() bool {
 	cfg := a.GetComfyConfig()
 	resp, err := http.Get(cfg.URL + "/system_stats")
-	if err != nil { return false }
+	if err != nil {
+		return false
+	}
 	defer resp.Body.Close()
 	return resp.StatusCode == 200
 }
@@ -383,25 +412,32 @@ func (a *App) CheckComfyUI() bool {
 func (a *App) GetComfyModels() ([]string, error) {
 	cfg := a.GetComfyConfig()
 	resp, err := http.Get(cfg.URL + "/object_info/CheckpointLoaderSimple")
-	if err != nil { return nil, fmt.Errorf("ComfyUI not reachable: %w", err) }
+	if err != nil {
+		return nil, fmt.Errorf("ComfyUI not reachable: %w", err)
+	}
 	defer resp.Body.Close()
 
 	var info map[string]interface{}
-	if err := json.NewDecoder(resp.Body).Decode(&info); err != nil { return nil, err }
+	if err := json.NewDecoder(resp.Body).Decode(&info); err != nil {
+		return nil, err
+	}
 
 	node, _ := info["CheckpointLoaderSimple"].(map[string]interface{})
 	input, _ := node["input"].(map[string]interface{})
 	required, _ := input["required"].(map[string]interface{})
 	ckptName, _ := required["ckpt_name"].([]interface{})
-	if len(ckptName) == 0 { return nil, nil }
+	if len(ckptName) == 0 {
+		return nil, nil
+	}
 	list, _ := ckptName[0].([]interface{})
 	result := make([]string, 0, len(list))
 	for _, m := range list {
-		if s, ok := m.(string); ok { result = append(result, s) }
+		if s, ok := m.(string); ok {
+			result = append(result, s)
+		}
 	}
 	return result, nil
 }
-
 
 func (a *App) GenerateImage(storyID, prompt string) (string, error) {
 	cfg := a.GetComfyConfig()
@@ -422,12 +458,12 @@ func (a *App) GenerateImage(storyID, prompt string) (string, error) {
 		if _, isUIFormat := workflow["nodes"]; isUIFormat {
 			return "", fmt.Errorf(
 				"workflow is in UI format, not API format.\n\n" +
-				"To get the API format:\n" +
-				"1. Open ComfyUI in your browser\n" +
-				"2. Click the Settings gear icon (bottom-right)\n" +
-				"3. Enable \"Dev Mode Options\"\n" +
-				"4. Reload the page — a new \"Save (API Format)\" option will appear in the menu\n" +
-				"5. Save and load that file here instead",
+					"To get the API format:\n" +
+					"1. Open ComfyUI in your browser\n" +
+					"2. Click the Settings gear icon (bottom-right)\n" +
+					"3. Enable \"Dev Mode Options\"\n" +
+					"4. Reload the page — a new \"Save (API Format)\" option will appear in the menu\n" +
+					"5. Save and load that file here instead",
 			)
 		}
 
@@ -436,7 +472,9 @@ func (a *App) GenerateImage(storyID, prompt string) (string, error) {
 		if nodeID == "" {
 			for id, node := range workflow {
 				nodeMap, ok := node.(map[string]interface{})
-				if !ok { continue }
+				if !ok {
+					continue
+				}
 				if nodeMap["class_type"] == "CLIPTextEncode" {
 					nodeID = id
 					break
@@ -457,7 +495,9 @@ func (a *App) GenerateImage(storyID, prompt string) (string, error) {
 		}
 		inputs["text"] = prompt
 	} else {
-		if cfg.Model == "" { return "", fmt.Errorf("no ComfyUI model selected — configure one in Settings") }
+		if cfg.Model == "" {
+			return "", fmt.Errorf("no ComfyUI model selected — configure one in Settings")
+		}
 		seed := time.Now().UnixNano() % 9999999999
 		workflow = map[string]interface{}{
 			"3": map[string]interface{}{"class_type": "KSampler", "inputs": map[string]interface{}{
@@ -477,14 +517,20 @@ func (a *App) GenerateImage(storyID, prompt string) (string, error) {
 
 	body, _ := json.Marshal(map[string]interface{}{"prompt": workflow})
 	resp, err := http.Post(cfg.URL+"/prompt", "application/json", bytes.NewReader(body))
-	if err != nil { return "", fmt.Errorf("ComfyUI not reachable: %w", err) }
+	if err != nil {
+		return "", fmt.Errorf("ComfyUI not reachable: %w", err)
+	}
 	defer resp.Body.Close()
 
 	respBody, err := io.ReadAll(resp.Body)
-	if err != nil { return "", err }
+	if err != nil {
+		return "", err
+	}
 
 	var result map[string]interface{}
-	if err := json.Unmarshal(respBody, &result); err != nil { return "", err }
+	if err := json.Unmarshal(respBody, &result); err != nil {
+		return "", err
+	}
 
 	promptID, _ := result["prompt_id"].(string)
 	if promptID == "" {
@@ -506,30 +552,42 @@ func (a *App) GenerateImage(storyID, prompt string) (string, error) {
 	for i := 0; i < 120; i++ {
 		time.Sleep(time.Second)
 		histResp, err := http.Get(cfg.URL + "/history/" + promptID)
-		if err != nil { continue }
+		if err != nil {
+			continue
+		}
 		var hist map[string]interface{}
 		_ = json.NewDecoder(histResp.Body).Decode(&hist)
 		histResp.Body.Close()
 
 		entry, ok := hist[promptID].(map[string]interface{})
-		if !ok { continue }
+		if !ok {
+			continue
+		}
 		outputs, ok := entry["outputs"].(map[string]interface{})
-		if !ok { continue }
+		if !ok {
+			continue
+		}
 
 		for _, nodeOut := range outputs {
 			nodeMap, _ := nodeOut.(map[string]interface{})
 			images, _ := nodeMap["images"].([]interface{})
-			if len(images) == 0 { continue }
+			if len(images) == 0 {
+				continue
+			}
 			img, _ := images[0].(map[string]interface{})
 			filename, _ := img["filename"].(string)
 			subfolder, _ := img["subfolder"].(string)
 			imgType, _ := img["type"].(string)
 
 			imgResp, err := http.Get(fmt.Sprintf("%s/view?filename=%s&subfolder=%s&type=%s", cfg.URL, filename, subfolder, imgType))
-			if err != nil { return "", err }
+			if err != nil {
+				return "", err
+			}
 			defer imgResp.Body.Close()
 			imgData, err := io.ReadAll(imgResp.Body)
-			if err != nil { return "", err }
+			if err != nil {
+				return "", err
+			}
 			return "data:image/png;base64," + base64.StdEncoding.EncodeToString(imgData), nil
 		}
 	}
