@@ -2,8 +2,7 @@
 import { useState, useRef, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import StorySettingsPanel from "@/components/StorySettingsPanel";
-import { GetStory, StreamMessage, SaveSession, GenerateImage } from "../../../wailsjs/go/main/App";
-import { EventsOn } from "../../../wailsjs/runtime/runtime";
+import { GetStory, StreamMessage, SaveSession, GenerateImage, EventsOn } from "@/lib/wails";
 import ContextBar from "./_components/ContextBar";
 import ChatInput from "./_components/ChatInput";
 import MessageList, { type Message } from "./_components/MessageList";

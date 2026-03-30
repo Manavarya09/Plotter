@@ -1,6 +1,6 @@
 "use client";
 import { useTheme, THEMES, FONTS, ThemeId, FontId } from "@/components/ThemeProvider";
-import { PickBackgroundImage } from "../../../wailsjs/go/main/App";
+import { PickBackgroundImage } from "@/lib/wails";
 
 export default function ThemePage() {
     const { settings, setTheme, setFont, setBackground, clearBackground } = useTheme();

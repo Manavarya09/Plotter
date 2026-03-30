@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { GetOllamaModels, UpdateStory, UpdateStorySettings, PickStoryCoverImage, ClearStoryCoverImage } from "../../wailsjs/go/main/App";
+import { GetOllamaModels, UpdateStory, UpdateStorySettings, PickStoryCoverImage, ClearStoryCoverImage } from "@/lib/wails";
 
 type Character = { id: string; name: string; description: string };
 

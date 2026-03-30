@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState, useRef, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { GetStories, CreateStory, UpdateStoryStatus, DeleteStory } from "../../wailsjs/go/main/App";
+import { GetStories, CreateStory, UpdateStoryStatus, DeleteStory } from "@/lib/wails";
 import { BackgroundBeams } from "@/components/ui/background-beams";
 
 type Story = {

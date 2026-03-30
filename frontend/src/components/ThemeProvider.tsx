@@ -1,5 +1,6 @@
 "use client";
 import { createContext, useContext, useEffect, useState } from "react";
+import { GetBackground, ClearBackground } from "@/lib/wails";
 
 export type ThemeId = "heritage" | "midnight" | "ivory" | "slate" | "obsidian" | "forest" | "deepsea" | "ember" | "abyss";
 export type FontId = "noto-serif" | "playfair" | "garamond" | "lora";
@@ -227,17 +228,15 @@ export default function ThemeProvider({ children }: { children: React.ReactNode 
         } catch {}
 
         // Restore background from Go backend (file on disk, no quota limit)
-        import("../../wailsjs/go/main/App").then(({ GetBackground }) => {
-            GetBackground().then(dataUrl => {
-                if (dataUrl) {
-                    setSettings(s => {
-                        const next = { ...s, background: dataUrl };
-                        applyTheme(next);
-                        return next;
-                    });
-                }
-            }).catch(() => {});
-        });
+        GetBackground().then(dataUrl => {
+            if (dataUrl) {
+                setSettings(s => {
+                    const next = { ...s, background: dataUrl };
+                    applyTheme(next);
+                    return next;
+                });
+            }
+        }).catch(() => {});
     }, []);
 
     const savePrefs = (next: ThemeSettings) => {
@@ -259,7 +258,7 @@ export default function ThemeProvider({ children }: { children: React.ReactNode 
                 applyTheme(next);
             },
             clearBackground: () => {
-                import("../../wailsjs/go/main/App").then(({ ClearBackground }) => ClearBackground());
+                ClearBackground();
                 const next = { ...settings, background: "" };
                 setSettings(next);
                 applyTheme(next);

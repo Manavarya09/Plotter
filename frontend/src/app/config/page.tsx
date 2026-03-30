@@ -13,9 +13,9 @@ import {
     GetComfyModels,
     SaveComfyConfig,
     BrowseWorkflowFile,
-} from "../../../wailsjs/go/main/App";
+    EventsOn,
+} from "@/lib/wails";
 import { main } from "../../../wailsjs/go/models";
-import { EventsOn } from "../../../wailsjs/runtime/runtime";
 
 type PullProgress = { status: string; total: number; completed: number; percent: number };
 type PullState = { active: boolean; progress: PullProgress | null; error: string | null };

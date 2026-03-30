@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { CreateStory, UpdateStorySettings, GetUserTemplates, CreateUserTemplate, DeleteUserTemplate } from "../../../wailsjs/go/main/App";
+import { CreateStory, UpdateStorySettings, GetUserTemplates, CreateUserTemplate, DeleteUserTemplate } from "@/lib/wails";
 import { TEMPLATES, type Template } from "./_content/templates";
 
 type UserTemplate = {

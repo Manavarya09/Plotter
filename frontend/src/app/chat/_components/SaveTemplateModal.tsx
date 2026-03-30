@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { CreateUserTemplate } from "../../../../wailsjs/go/main/App";
+import { CreateUserTemplate } from "@/lib/wails";
 
 type Story = {
     genre: string;
