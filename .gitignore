@@ -1,3 +1,35 @@
+# Build output
 build/bin
+
+# Dependencies
 node_modules
 frontend/dist
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE / editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Go
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+vendor/
+
+# Wails dev binary
+plotter
+Plotter
+
+# Environment files
+.env
+.env.*
